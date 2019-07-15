@@ -1,8 +1,8 @@
-#Budgety
+# Budgety
 
 A small JavaScript budget manager app.
 
-[Budgety] (https://cagl18.github.io/budgety/)
+[Budgety](https://cagl18.github.io/budgety/)
 
 ## Getting Started
 
