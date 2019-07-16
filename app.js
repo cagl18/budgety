@@ -149,7 +149,8 @@ var UIController = (function(){
         expensesLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
         container: '.container',
-        expensesPercLabel: '.item__percentage'
+        expensesPercLabel: '.item__percentage',
+        dateLable: '.budget__title--month'
     }; // object define all UI input data, this allow easy to code maintance.
     var formatNumber = function(num, type){
         var numSplit, int, dec, sign;
@@ -173,6 +174,11 @@ var UIController = (function(){
 
         return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
 
+    };
+    var nodeListForEach = function(list, callback) {
+        for(var i =0; i < list.length; i++) {
+            callback(list[i], i);
+        }
     };
     return { // return of UICOntroller, these are the publicly accessible properties (API)
         getInput: function(){
@@ -234,12 +240,6 @@ var UIController = (function(){
         displayPercentages: function(percentages) {
             var fields = document.querySelectorAll(DOMstrings.expensesPercLabel); // this is a node list
 
-            var nodeListForEach = function(list, callback) {
-                for(var i =0; i < list.length; i++) {
-                    callback(list[i], i);
-                }
-            };
-
             nodeListForEach(fields, function(current, index){
                 // do stuff
                 if (percentages[index] > 0){
@@ -249,6 +249,32 @@ var UIController = (function(){
                 }
                 
             });
+        },
+        displayMonth: function() {
+            var now, months,month, year;
+
+            now = new Date(); //return the date of today
+            // var christmas = new Date(2016,11,25); //return december 25th 2016
+
+            months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            month = now.getMonth();
+            year = now.getFullYear();
+            document.querySelector(DOMstrings.dateLable).textContent = months[month] + ' ' + year;
+            
+        },
+        changeType: function() {
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' + 
+                DOMstrings.inputDescription + ',' + 
+                DOMstrings.inputValue
+            );
+
+            nodeListForEach(fields, function(cur) {
+                cur.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
+
         },
         getDOMstrings: function(){
             return DOMstrings;
@@ -270,6 +296,8 @@ var controller = (function(budgetCtrl, UICtrl){
             }
         }); // key pressed happens on the document not specific element
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changeType);
     };
 
     var updateBudget = function() {
@@ -347,6 +375,7 @@ var controller = (function(budgetCtrl, UICtrl){
     return {
         init: function(){
             console.log("Application has started.");
+            UICtrl.displayMonth();
             UICtrl.displayBudget({
                 budget: 0,
                 totalInc: 0,
